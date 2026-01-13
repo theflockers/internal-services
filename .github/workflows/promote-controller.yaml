@@ -1,0 +1,34 @@
+---
+name: Promote branch
+on:
+  workflow_dispatch:
+    inputs:
+      promotion-type:
+        description: The type of promotion to perform
+        type: choice
+        required: true
+        default: development-to-staging
+        options:
+          - development-to-staging
+          - staging-to-production
+jobs:
+  promote-branch:
+    name: Promote controller
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955  # v4
+        with:
+          fetch-depth: 1  # Fetch full history for commit analysis
+
+     - name: Create PR
+         echo "Creating PR to promote the Internal Services controller"
+         curl https://raw.githubusercontent.com/theflockers/release-service-automations/refs/heads/release-2029/promote-controller/scripts/promote-controller.sh | bash -s \
+           -s "$FROM_BRANCH" \
+           -t "$TO_BRANCH" \
+           -i https://github.com/theflockers/infra-common-deployments.git \
+           -r https://github.com/konflux-ci/internal-services.git \
+           -c internal-services \
+           -f FROM=components/internal-services/internal-"$FROM_BRANCH"/manager/manager-*.yaml,TO=components/internal-services/internal-"$TO_BRANCH"/manager/manager-*.yaml \
+           -j ".spec.template.spec.containers[0].image" \
+           -o "${{github.actor}}"
