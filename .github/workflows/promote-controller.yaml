@@ -21,14 +21,17 @@ jobs:
         with:
           fetch-depth: 1  # Fetch full history for commit analysis
 
-     - name: Create PR
-         echo "Creating PR to promote the Internal Services controller"
-         curl https://raw.githubusercontent.com/theflockers/release-service-automations/refs/heads/release-2029/promote-controller/scripts/promote-controller.sh | bash -s \
-           -s "$FROM_BRANCH" \
-           -t "$TO_BRANCH" \
-           -i https://github.com/theflockers/infra-common-deployments.git \
-           -r https://github.com/konflux-ci/internal-services.git \
-           -c internal-services \
-           -f FROM=components/internal-services/internal-"$FROM_BRANCH"/manager/manager-*.yaml,TO=components/internal-services/internal-"$TO_BRANCH"/manager/manager-*.yaml \
-           -j ".spec.template.spec.containers[0].image" \
-           -o "${{github.actor}}"
+      - name: Create PR
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+        run: |
+          echo "Creating PR to promote the Internal Services controller"
+          curl https://raw.githubusercontent.com/theflockers/release-service-automations/refs/heads/release-2029/promote-controller/scripts/promote-controller.sh | bash -s \
+            -s "$FROM_BRANCH" \
+            -t "$TO_BRANCH" \
+            -i https://github.com/theflockers/infra-common-deployments.git \
+            -r https://github.com/konflux-ci/internal-services.git \
+            -c internal-services \
+            -f FROM=components/internal-services/internal-"$FROM_BRANCH"/manager/manager-*.yaml,TO=components/internal-services/internal-"$TO_BRANCH"/manager/manager-*.yaml \
+            -j ".spec.template.spec.containers[0].image" \
+            -o "${{github.actor}}"
