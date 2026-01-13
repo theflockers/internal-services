@@ -207,10 +207,10 @@ SYNC_FORK_JSON=$(curl -s -L \
 # setting global git config user info
 set_credentials "${FORK_OWNER}" "${FORK_OWNER_EMAIL}"
 
+echo "$SYNC_FORK_JSON"
+
 INFRA_REPO_URL="https://${FORK_OWNER}:${TOKEN}@github.com/${INFRA_OWNER}/${INFRA_REPO}.git"
 PROMOTE_REPO_URL="https://${FORK_OWNER}:${TOKEN}@github.com/${PROMOTE_FORK_OWNER}/${PROMOTE_FORK_NAME}.git"
-
-echo "$SYNC_FORK_JSON"
 
 if [ ! -d ${PROMOTE_SERVICE_DIR} ]; then
     PROMOTE_SERVICE_DIR=${TMPDIR}/$PROMOTE_FORK_NAME
@@ -249,6 +249,7 @@ echo "$PROMOTE_FORK_NAME"' target overlay commit -> '"$RS_TARGET_OVERLAY_COMMIT"
 echo ""
 
 cd ${PROMOTE_SERVICE_DIR}
+git remote -v
 git fetch --all --tags --prune
 RS_COMMITS=($(git rev-list --first-parent --ancestry-path "$RS_TARGET_OVERLAY_COMMIT"'...'"$RS_SOURCE_OVERLAY_COMMIT"))
 
