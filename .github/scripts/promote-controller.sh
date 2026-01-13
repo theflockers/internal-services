@@ -248,7 +248,7 @@ echo "$PROMOTE_FORK_NAME"' source overlay commit -> '"$RS_SOURCE_OVERLAY_COMMIT"
 echo "$PROMOTE_FORK_NAME"' target overlay commit -> '"$RS_TARGET_OVERLAY_COMMIT"
 echo ""
 
-cd ${OLDPWD}
+cd ${PROMOTE_SERVICE_DIR}
 git fetch --all --tags --prune
 RS_COMMITS=($(git rev-list --first-parent --ancestry-path "$RS_TARGET_OVERLAY_COMMIT"'...'"$RS_SOURCE_OVERLAY_COMMIT"))
 
