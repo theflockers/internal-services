@@ -26,7 +26,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
         run: |
           echo "Creating PR to promote the Internal Services controller"
-          curl https://raw.githubusercontent.com/theflockers/release-service-automations/refs/heads/release-2029/promote-controller/scripts/promote-controller.sh | bash -s \
+          bash .github/scripts/promote-controller.sh \
             -s "$FROM_BRANCH" \
             -t "$TO_BRANCH" \
             -i https://github.com/theflockers/infra-common-deployments.git \
