@@ -25,6 +25,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
         run: |
+          pwd
           # Determine source and target overlays
           if [ "${{ inputs.promotion-type }}" = "development-to-staging" ]; then
             FROM_BRANCH="development"
