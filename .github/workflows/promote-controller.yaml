@@ -25,6 +25,15 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
         run: |
+          # Determine source and target overlays
+          if [ "${{ inputs.promotion-type }}" = "development-to-staging" ]; then
+            FROM_BRANCH="development"
+            TO_BRANCH="staging"
+          else
+            FROM_BRANCH="staging"
+            TO_BRANCH="production"
+          fi
+
           echo "Creating PR to promote the Internal Services controller"
           bash -x .github/scripts/promote-controller.sh \
             -s "$FROM_BRANCH" \
