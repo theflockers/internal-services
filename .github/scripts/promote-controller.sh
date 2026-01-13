@@ -141,6 +141,9 @@ require_arg "PROMOTE_REPO_URL" "${PROMOTE_REPO_URL}" "PROMOTE_REPO_URL promoting
 SOURCE_FILE=$(get_source_file $UPDATE_FILE_PATHS)
 DESTINATION_FILE=$(get_destination_file $UPDATE_FILE_PATHS)
 
+# local clone directory
+LOCAL_CLONE=$(pwd)
+
 # Github infra-deployments repository details
 read -r INFRA_OWNER INFRA_REPO <<< $(get_fork_info "$INFRA_REPO_URL")
 
@@ -167,10 +170,9 @@ DESCRIPTION="Included PRs:\r\n"
 # Clone the repository
 TMPDIR=$(mktemp -d)
 INFRA_DIR=${TMPDIR}/$INFRA_REPO
-PROMOTE_SERVICE_DIR=${TMPDIR}/$PROMOTE_FORK_NAME
+PROMOTE_SERVICE_DIR=$LOCAL_CLONE
 
 mkdir -p ${INFRA_DIR}
-mkdir -p ${PROMOTE_SERVICE_DIR}
 
 if [ "${CLEANUP}" != "true" ]; then
   trap "rm -rf ${TMPDIR}" EXIT
@@ -205,10 +207,16 @@ SYNC_FORK_JSON=$(curl -s -L \
 # setting global git config user info
 set_credentials "${FORK_OWNER}" "${FORK_OWNER_EMAIL}"
 
-echo "$SYNC_FORK_JSON"
-
 INFRA_REPO_URL="https://${FORK_OWNER}:${TOKEN}@github.com/${INFRA_OWNER}/${INFRA_REPO}.git"
 PROMOTE_REPO_URL="https://${FORK_OWNER}:${TOKEN}@github.com/${PROMOTE_FORK_OWNER}/${PROMOTE_FORK_NAME}.git"
+
+echo "$SYNC_FORK_JSON"
+
+if [ ! -d ${PROMOTE_SERVICE_DIR} ]; then
+    PROMOTE_SERVICE_DIR=${TMPDIR}/$PROMOTE_FORK_NAME
+    mkdir -p ${PROMOTE_SERVICE_DIR}
+    git clone "$PROMOTE_REPO_URL"
+fi
 
 # clone infra-deployments
 git clone "$INFRA_REPO_URL"
